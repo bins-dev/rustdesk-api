@@ -31,7 +31,8 @@ else
 fi
 
 # Compile the Go code and output it to the release directory
-go build -o release/apimain cmd/apimain.go
+CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -tags musl -ldflags '-extldflags "-static"' -o release/apimain cmd/apimain.go
+
 
 # Copy resource files to the release directory
 cp -ar resources release/

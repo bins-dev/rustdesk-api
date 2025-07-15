@@ -23,7 +23,6 @@ data/
 .idea/
 
 # Ignore binaries and build cache
-release/
 bin/
 *.exe
 *.out

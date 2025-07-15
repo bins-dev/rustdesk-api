@@ -1,10 +1,15 @@
-FROM alpine
+FROM alpine:latest
 
-ARG BUILDARCH
+# set workdir
 WORKDIR /app
+
+# alpine install tzdata
 RUN apk add --no-cache tzdata
-COPY ./${BUILDARCH}/release /app/
+
+COPY ./release /app/
+
 VOLUME /app/data
 
 EXPOSE 21114
+
 CMD ["./apimain"]
