@@ -3,7 +3,7 @@
 set -e
 # Automatically get the current environment's GOARCH; if not defined, use the detected system architecture
 GOARCH=${GOARCH:-$(go env GOARCH)}
-DOCS="true"
+DOCS="false"
 # Safely remove the old release directory
 rm -rf release
 
@@ -14,21 +14,20 @@ go env -w CGO_ENABLED=1
 go env -w GOOS=linux
 go env -w GOARCH=${GOARCH}
 
-
 # Generate Swagger documentation if DOCS is not empty
-if [ -n "${DOCS}" ]; then
+if [ "${DOCS}" = "true" ]; then
     # Check if swag is installed
-    if ! command -v swag &> /dev/null; then
-        echo "swag command not found. Please install it using:"
-        echo "go install github.com/swaggo/swag/cmd/swag@latest"
-        echo "Skipping Swagger documentation generation due to missing swag tool."
-    else
+    if [ -f "$(go env GOBIN)/swag" ]; then
         echo "Generating Swagger documentation..."
         swag init -g cmd/apimain.go --output docs/api --instanceName api --exclude http/controller/admin
         swag init -g cmd/apimain.go --output docs/admin --instanceName admin --exclude http/controller/api
+    else
+        echo "swag command not found. Please install it using:"
+        echo "go install github.com/swaggo/swag/cmd/swag@latest"
+        echo "Skipping Swagger documentation generation due to missing swag tool."
     fi
 else
-    echo "Skipping Swagger documentation generation due to DOCS is empty."
+    echo "Skipping Swagger documentation generation due to DOCS is false."
 fi
 
 # Compile the Go code and output it to the release directory
